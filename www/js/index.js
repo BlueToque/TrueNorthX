@@ -41,11 +41,11 @@ var app = {
 		$('#getIt').click(function() {
 			navigator.geolocation.getCurrentPosition(disp);
 		});
+		
         function disp(pos) {
-        $('.lat-view').html(pos.coords.latitude);
-        $('.long-view').html(pos.coords.longitude);
-    }
-
+			$('.lat-view').html(pos.coords.latitude);
+			$('.long-view').html(pos.coords.longitude);
+		}
     
     },
 
