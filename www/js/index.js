@@ -60,6 +60,7 @@ var app = {
     initialize: function() {
         this.bindEvents();
         var self = this;
+		console.log('Initialized');
         self.showAlert("Initialized","Info");
     },
 
@@ -76,30 +77,31 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
+        self.showAlert("Initialized","Info");
         app.receivedEvent('deviceready');
         
 		$('#getIt').click(function() {
+			console.log('Clicked');
 			GeoLocate(
 				function(coords){
+					console.log('Got coordinates '+coords.latitude+', '+coords.longitude);
 					$('.lat-view').html(coords.latitude);
 					$('.long-view').html(coords.longitude);
 				}, 
 				function(error){
+					console.log('Error getting location: '+error);
 					showAlert(error,"Error");
 				});
 		});
     },
-
+	log: function (message)
+	{
+		$('#update').prepend('<tr><td>'+ new Date().toString()+ 'td><td>'+message+'</td></tr>');
+	},
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
         console.log('Received Event: ' + id);
+        lof('Received Event: ' + id);
     },
     showAlert: function (message, title) {
 		if (navigator.notification) {

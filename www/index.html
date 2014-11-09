@@ -19,14 +19,15 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="format-detection" content="telephone=no" />
 		<meta name="msapplication-tap-highlight" content="no" />
 		<!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
 		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<link href="css/index.css" rel="stylesheet" type="text/css" />
+		<link href="css/bootstrap.min.css"  type="text/css"  rel="stylesheet">
 		<title>TrueNorthX</title>
 	</head>
 	<body>
@@ -46,11 +47,20 @@
 			<div class="lat hds">Latitude</div>
 			<div class="lat-view ds"></div>
 		</div>
+		<table class="table table-striped table-bordered table-hover table-condensed push-to-bottom" style="overflow:scroll">
+			<thead>
+				<tr>
+					<th>Time</th><th>Message</th>
+				</tr>
+			</thead>
+			<tbody id="update">
+				 
+			</tbody>
+		</table>		
 		<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
-		<!--
 		<script type="text/javascript" src="cordova.js"></script>
-		-->
 		<script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js"></script>
 		<script type="text/javascript">
 			app.initialize();
 		</script>

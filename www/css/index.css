@@ -44,6 +44,12 @@ body {
     /*text-transform:uppercase;*/
     width:100%;
 }
+.push-to-bottom {
+    position: absolute;
+    left: 50%;
+    margin-left: -50px;
+    bottom: 50px;
+}
 #getIt {
     width: 400px;
     text-align: center;
