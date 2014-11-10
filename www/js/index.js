@@ -70,6 +70,7 @@ var app = {
 			}
 			
 			// call the first geolocation
+			/*
 			GeoLocate(
 				function(coords){
 					app.log('Got coordinates ' + coords.latitude + ', ' + coords.longitude);
@@ -80,7 +81,7 @@ var app = {
 				});
 				
 			app.log("Geolocate called");
-				
+			*/
 		}
 		catch(ex){
 			app.log(ex);
@@ -89,12 +90,11 @@ var app = {
 	
 	log: function (message)
 	{	
-		try{
+		try {
 			console.log(message);
 			$('#update').prepend('<tr><td>'+ new Date().toString()+ 'td><td>'+message+'</td></tr>');
 		}
-		catch(ex)
-		{
+		catch(ex) {
 			console.log("Error logging error: " + ex);
 		}
 	},
@@ -128,8 +128,6 @@ var app = {
             // IMPORTANT:  You must execute the #finish method here to inform the native plugin that you're finished,
             //  and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
             // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
-            //
-            //
             bgGeo.finish();
         };
 
@@ -138,9 +136,8 @@ var app = {
         */
         var callbackFn = function(location) {
             console.log('[js] BackgroundGeoLocation callback:  ' + location.latitudue + ',' + location.longitude);
+
             // Do your HTTP request here to POST location to your server.
-            //
-            //
             yourAjaxCallback.call(this);
         };
 
