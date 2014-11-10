@@ -4,8 +4,6 @@
 
 .push-to-bottom {
     position: absolute;
-    left: 50%;
-    margin-left: -50px;
-    bottom: 50px;
+    bottom: 10px;
 }
 

@@ -75,16 +75,15 @@ var app = {
         }
     },
 	
-	log: function (message)
-	{	
-		try {
-			console.log(message);
-			$('#update').prepend('<tr><td>'+ new Date().toString()+ 'td><td>'+message+'</td></tr>');
-		}
-		catch(ex) {
-			console.log("Error logging error: " + ex);
-		}
-	},
+    log: function (message) {
+        try {
+            console.log(message);
+            $('#update').prepend('<tr><td>' + new Date().toString() + '</td><td>' + message + '</td></tr>');
+        }
+        catch (ex) {
+            console.log("Error logging error: " + ex);
+        }
+    },
     
     // Update DOM on a Received Event
     receivedEvent: function(id) {
@@ -139,16 +138,14 @@ var app = {
                 auth_token: 'user_secret_auth_token',
                 foo: 'bar'
             },
-            headers: {
-                'X-Foo': 'bar'
-            },
+            headers: {'X-Foo': 'bar'},
             desiredAccuracy: 10,
             stationaryRadius: 20,
-            distanceFilter: 30,
+            distanceFilter: 10,
             notificationTitle: 'Background tracking',   // <-- android only, customize the title of the notification
             notificationText: 'ENABLED',                // <-- android only, customize the text of the notification
-            activityType: "AutomotiveNavigation",       // <-- iOS-only
-            debug: true     // <-- enable this hear sounds for background-geolocation life-cycle.
+            activityType: "OtherNavigation",            // <-- iOS-only
+            debug: true                                 // <-- enable this hear sounds for background-geolocation life-cycle.
         });
 		app.log('Background tracking configured');
 
