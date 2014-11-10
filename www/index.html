@@ -15,7 +15,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div class="col-sm-6">
-				<button id="getIt" type="button" class="btn btn-default btn-lg">Get Coordinates</button>
+				<button id="locate" type="button" class="btn btn-default btn-lg">Get Coordinates</button>
 			</div>
 			<div class="col-sm-6">
 				<dl class="dl-horizontal">
@@ -39,7 +39,9 @@
 	<script type="text/javascript" src="js/index.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script type="text/javascript">
-		app.initialize();
+		$( document ).ready(function() {
+			app.initialize();
+		}
 	</script>
 	</body>
 </html>
