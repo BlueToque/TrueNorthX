@@ -58,27 +58,30 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
-        app.log("Initialized");
-        app.showAlert("Initialized","Info");
-        app.receivedEvent('deviceready');
+		try {
+			app.log("Initialized");
+			app.showAlert("Initialized","Info");
+			app.receivedEvent('deviceready');
 
-		GeoLocate(
-			function(coords){
-				app.log('Got coordinates ' + coords.latitude + ', ' + coords.longitude);
-				$('#lat').html(coords.latitude);
-				$('#long').html(coords.longitude);
-			}, 
-			function(error){
-				app.log('Error getting location: '+ error);
+			GeoLocate(
+				function(coords){
+					app.log('Got coordinates ' + coords.latitude + ', ' + coords.longitude);
+					$('#lat').html(coords.latitude);
+					$('#long').html(coords.longitude);
+				}, 
+				function(error){
+					app.log('Error getting location: '+ error);
+				});
+			app.log("Geolocate called");
+
+					
+			$('#locate').click(function() {
+				app.log('Clicked');
 			});
-        app.log("Geolocate called");
-
-				
-		$('#locate').click(function() {
-			app.log('Clicked');
-
-			
-		});
+		}
+		catch(ex){
+			app.log(ex);
+		}
     },
 	
 	log: function (message)
@@ -90,7 +93,6 @@ var app = {
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         app.log('Received Event: ' + id);
-        lof('Received Event: ' + id);
     },
     
     showAlert: function (message, title) {
