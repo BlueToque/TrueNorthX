@@ -38,6 +38,7 @@ function GeoLocate(onSuccess, onError) {
 function DisplayCoords(coords){
 	$('#lat').html(coords.latitude);
 	$('#long').html(coords.longitude);
+	$('#error').html(coords.accuracy);
 }
 
 var app = {
