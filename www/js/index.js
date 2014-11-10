@@ -171,7 +171,7 @@ var app = {
         // If you wish to turn OFF background-tracking, call the #stop method.
         // bgGeo.stop()
     },
-	function StartGeolocation()
+	StartGeolocation: function ()
 	{
 		// Turn ON the background-geolocation system.  
 		// The user will be tracked whenever they suspend the app.
@@ -180,7 +180,7 @@ var app = {
 		app.log('Background tracking started');
 	},
 	// If you wish to turn OFF background-tracking, call the #stop method.
-	function StopGeolocation()
+	StopGeolocation: function ()
 	{
         var bgGeo = window.plugins.backgroundGeoLocation;
 		bgGeo.stop()
