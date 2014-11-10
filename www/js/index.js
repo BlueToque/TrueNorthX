@@ -95,7 +95,7 @@ var app = {
 		}
 		catch(ex)
 		{
-			console.log("Error logging error: "+ex);
+			console.log("Error logging error: " + ex);
 		}
 	},
     
