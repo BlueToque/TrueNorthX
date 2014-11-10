@@ -1,22 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
- 
  function GeoLocate(onSuccess, onError) {
     if (!navigator.geolocation) {
         onError("Geolocation not supported in this browser");
@@ -60,8 +41,8 @@ var app = {
     initialize: function() {
         this.bindEvents();
         var self = this;
-		app.log('Initialized');
-        self.showAlert("Initialized","Info");
+		app.log('Initialize');
+        self.showAlert("Initialize","Info");
     },
 
     // Bind Event Listeners
@@ -77,26 +58,32 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
+        app.log("Initialized");
         app.showAlert("Initialized","Info");
         app.receivedEvent('deviceready');
-        
-		$('#getIt').click(function() {
+
+		GeoLocate(
+			function(coords){
+				app.log('Got coordinates ' + coords.latitude + ', ' + coords.longitude);
+				$('#lat').html(coords.latitude);
+				$('#long').html(coords.longitude);
+			}, 
+			function(error){
+				app.log('Error getting location: '+ error);
+			});
+        app.log("Geolocate called");
+
+				
+		$('#locate').click(function() {
 			app.log('Clicked');
-			GeoLocate(
-				function(coords){
-					app.log('Got coordinates '+coords.latitude+', '+coords.longitude);
-					$('.lat-view').html(coords.latitude);
-					$('.long-view').html(coords.longitude);
-				}, 
-				function(error){
-					app.log('Error getting location: '+error);
-					showAlert(error,"Error");
-				});
+
+			
 		});
     },
 	
 	log: function (message)
 	{
+		console.log(message);
 		$('#update').prepend('<tr><td>'+ new Date().toString()+ 'td><td>'+message+'</td></tr>');
 	},
     
