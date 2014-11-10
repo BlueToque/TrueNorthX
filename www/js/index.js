@@ -41,6 +41,7 @@ function DisplayCoords(coords){
 }
 
 var app = {
+    bgGeo: undefined,
 
     // Application Constructor
     initialize: function() {
@@ -60,32 +61,18 @@ var app = {
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-		try {
-			app.log("Initialized");
-			app.receivedEvent('deviceready');
+    onDeviceReady: function () {
+        try {
+            app.log("Initialized");
+            app.receivedEvent('deviceready');
 
-			if (window.plugins.backgroundGeoLocation) {
-				app.configureBackgroundGeoLocation();
-			}
-			
-			// call the first geolocation
-			/*
-			GeoLocate(
-				function(coords){
-					app.log('Got coordinates ' + coords.latitude + ', ' + coords.longitude);
-					DisplayCoords(coords);
-				}, 
-				function(error){
-					app.log('Error getting location: '+ error);
-				});
-				
-			app.log("Geolocate called");
-			*/
-		}
-		catch(ex){
-			app.log(ex);
-		}
+            if (window.plugins.backgroundGeoLocation) {
+                app.configureBackgroundGeoLocation();
+            }
+        }
+        catch (ex) {
+            app.log(ex);
+        }
     },
 	
 	log: function (message)
@@ -118,7 +105,7 @@ var app = {
             console.log('Location from Phonegap');
         });
 
-        var bgGeo = window.plugins.backgroundGeoLocation;
+        bgGeo = window.plugins.backgroundGeoLocation;
 
         /**
         * This would be your own callback for Ajax-requests after POSTing background geolocation to your server.
@@ -171,19 +158,26 @@ var app = {
         // If you wish to turn OFF background-tracking, call the #stop method.
         // bgGeo.stop()
     },
-	StartGeolocation: function ()
-	{
-		// Turn ON the background-geolocation system.  
-		// The user will be tracked whenever they suspend the app.
-        var bgGeo = window.plugins.backgroundGeoLocation;
-		bgGeo.start();
-		app.log('Background tracking started');
+	StartGeolocation: function () {
+	    try {
+	        // Turn ON the background-geolocation system.  
+	        // The user will be tracked whenever they suspend the app.
+	        bgGeo.start();
+	        app.log('Background tracking started');
+	    }
+	    catch (ex) {
+	        app.log("Error starting background geolocation: " + ex);
+	    }
 	},
 	// If you wish to turn OFF background-tracking, call the #stop method.
 	StopGeolocation: function ()
 	{
-        var bgGeo = window.plugins.backgroundGeoLocation;
-		bgGeo.stop()
-		app.log('Background tracking stopped');
+        try {
+		    bgGeo.stop()
+		    app.log('Background tracking stopped');
+        }
+	    catch (ex) {
+	        app.log("Error stopping background geolocation: " + ex);
+	    }
 	}
 };
