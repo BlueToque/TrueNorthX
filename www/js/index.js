@@ -1,41 +1,3 @@
-//THIS CODE SHOULD BE PART OF A FILE WHICH IS LOADED BEFORE jQueryMobile
-
-/**
-* Create couple of jQuery Deferred Objects to catch the 
-* firing of the two events associated with the loading of
-* the two frameworks.
-*/
-var gapReady = $.Deferred();
-var jqmReady = $.Deferred();
-
-//Catch "deviceready" event which is fired when PhoneGap is ready
-document.addEventListener("deviceReady", deviceReady, false);
-
-//Resolve gapReady in response to deviceReady event
-function deviceReady()
-{
-	gapReady.resolve();
-}
-
-/**
-* Catch "mobileinit" event which is fired when a jQueryMobile is loaded.
-* Ensure that we respond to this event only once.
-*/
-$(document).one("mobileinit", function(){
-	jqmReady.resolve();
-});
-
-/**
-* Run your App Logic only when both frameworks have loaded
-*/
-$.when(gapReady, jqmReady).then(myAppLogic);
-
-// App Logic
-function myAppLogic()
-{
-	app.initialize();
-}
-
 function GeoLocate(onSuccess, onError) {
     if (!navigator.geolocation) {
         onError("Geolocation not supported in this browser");
@@ -73,6 +35,11 @@ function GeoLocate(onSuccess, onError) {
     }
 }
 
+function DisplayCoords(coords){
+	$('#lat').html(coords.latitude);
+	$('#long').html(coords.longitude);
+}
+
 var app = {
 
     // Application Constructor
@@ -104,18 +71,13 @@ var app = {
 			GeoLocate(
 				function(coords){
 					app.log('Got coordinates ' + coords.latitude + ', ' + coords.longitude);
-					$('#lat').html(coords.latitude);
-					$('#long').html(coords.longitude);
+					DisplayCoords(coords);
 				}, 
 				function(error){
 					app.log('Error getting location: '+ error);
 				});
 			app.log("Geolocate called");
-
 					
-			$('#locate').click(function() {
-				app.log('Clicked');
-			});
 		}
 		catch(ex){
 			app.log(ex);
