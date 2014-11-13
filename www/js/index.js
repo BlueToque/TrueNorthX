@@ -1,35 +1,78 @@
-function GeoLocate(onSuccess, onError) {
+//
+// Get the location
+//
+function GeoLocate(onSuccess, onError, options) {
     if (!navigator.geolocation) {
         onError("Geolocation not supported in this browser");
         return;
     }
 
     try {
+        if (options = null)
+            options = { timeout: 10000, enableHighAccuracy: true };
+
         navigator.geolocation.getCurrentPosition(
             function (position) {
                 var coords = position.coords || position.coordinate || position;
                 onSuccess(coords);
             },
             function (error) {
-                var msg;
-                switch (error.code) {
-                    case error.UNKNOWN_ERROR: msg = "Unable to find your location"; break;
-                    case error.PERMISSION_DENINED: msg = "Permission denied in finding your location"; break;
-                    case error.POSITION_UNAVAILABLE: msg = "Your location is currently unknown"; break;
-                    case error.TIMEOUT: msg = "Attempt to find location took too long"; break;
-                    case error.BREAK: msg = "Attempt to find location took too long 2"; break;
-                    default: msg = "Other error: " + error.code;
-                }
-
-                var errorObj = new Object();
-                errorObj.error = error;
-                errorObj.message = msg;
-                onError(errorObj);
+                PositionError(error, onError)
             },
-            { timeout: 10000, enableHighAccuracy: true });
+            options);
     }
     catch (ex) {
         app.log(error);
+        onError("Exception: " + ex);
+    }
+}
+
+//
+// Generic position error method
+//
+function PositionError(error, onError)
+{
+    var msg;
+    switch (error.code) {
+        case error.UNKNOWN_ERROR: msg = "Unable to find your location"; break;
+        case error.PERMISSION_DENINED: msg = "Permission denied in finding your location"; break;
+        case error.POSITION_UNAVAILABLE: msg = "Your location is currently unknown"; break;
+        case error.TIMEOUT: msg = "Attempt to find location took too long"; break;
+        case error.BREAK: msg = "Attempt to find location took too long 2"; break;
+        default: msg = "Other error: " + error.code;
+    }
+
+    var errorObj = new Object();
+    errorObj.error = error;
+    errorObj.message = msg;
+    onError(errorObj);
+}
+
+//
+// Start tracking location
+//
+function TrackLocation(onSuccess, onError, options) {
+    if (!navigator.geolocation) {
+        onError("Geolocation not supported in this browser");
+        return;
+    }
+
+    try {
+        if (options = null)
+            options = { timeout: 10000, enableHighAccuracy: true };
+
+        var watchID =
+            navigator.geolocation.watchPosition(
+                function (position) {
+                    var coords = position.coords || position.coordinate || position;
+                    onSuccess(coords);
+                },
+                function (error) {
+                    PositionError(error, onError)
+                },
+                options);
+    }
+    catch (ex) {
         onError("Exception: " + ex);
     }
 }
@@ -40,23 +83,35 @@ function DisplayCoords(coords){
 	$('#error').html(coords.accuracy);
 }
 
+
+
 var app = {
-    bgGeo: undefined,
+    watchID: undefined,
 
     // Application Constructor
-    initialize: function() {
+    initialize: function () {
         this.bindEvents();
-		app.log('Initialize');
+        app.log('Initialize');
     },
 
     // Bind Event Listeners
-    //
     // Bind any events that are required on startup. Common events are:
     // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
+    bindEvents: function () {
+        app.log("Binding events");
         document.addEventListener('deviceready', this.onDeviceReady, false);
+        document.addEventListener('pause', this.onPause, false);
+        document.addEventListener('resume', this.onResume, false);
+        app.log("Events bound");
     },
-
+    onResume: function () {
+        app.log("Event:resume");
+        window.plugin.backgroundMode.disable();
+    },
+    onPause: function () {
+        app.log("Event:pause");
+        window.plugin.backgroundMode.enable();
+    },
     // deviceready Event Handler
     //
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
@@ -65,16 +120,11 @@ var app = {
         try {
             app.log("Initialized");
             app.receivedEvent('deviceready');
-
-            if (window.plugins.backgroundGeoLocation) {
-                app.configureBackgroundGeoLocation();
-            }
         }
         catch (ex) {
             app.log(ex);
         }
     },
-	
     log: function (message) {
         try {
             console.log(message);
@@ -84,97 +134,45 @@ var app = {
             console.log("Error logging error: " + ex);
         }
     },
-    
+
     // Update DOM on a Received Event
-    receivedEvent: function(id) {
+    receivedEvent: function (id) {
         app.log('Received Event: ' + id);
     },
-    
+
     showAlert: function (message, title) {
-		if (navigator.notification) {
-			navigator.notification.alert(message, null, title, 'OK');
-		} else {
-			alert(title ? (title + ": " + message) : message);
-		}
-	},
-	configureBackgroundGeoLocation: function() {
-        // Your app must execute AT LEAST ONE call for the current position via standard Cordova geolocation,
-        //  in order to prompt the user for Location permission.
-        window.navigator.geolocation.getCurrentPosition(function(location) {
-            console.log('Location from Phonegap');
-        });
-
-        bgGeo = window.plugins.backgroundGeoLocation;
-
-        /**
-        * This would be your own callback for Ajax-requests after POSTing background geolocation to your server.
-        */
-        var yourAjaxCallback = function(response) {
-            ////
-            // IMPORTANT:  You must execute the #finish method here to inform the native plugin that you're finished,
-            //  and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
-            // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
-            bgGeo.finish();
-        };
-
-        /**
-        * This callback will be executed every time a geolocation is recorded in the background.
-        */
-        var callbackFn = function(location) {
-            console.log('[js] BackgroundGeoLocation callback:  ' + location.latitudue + ',' + location.longitude);
-
-            // Do your HTTP request here to POST location to your server.
-            yourAjaxCallback.call(this);
-        };
-
-        var failureFn = function(error) {
-            console.log('BackgroundGeoLocation error');
+        if (navigator.notification) {
+            navigator.notification.alert(message, null, title, 'OK');
+        } else {
+            alert(title ? (title + ": " + message) : message);
         }
-        
-        // BackgroundGeoLocation is highly configurable.
-        bgGeo.configure(callbackFn, failureFn, {
-            url: 'http://only.for.android.com/update_location.json', // <-- only required for Android; ios allows javascript callbacks for your http
-            params: {                                               // HTTP POST params sent to your server when persisting locations.
-                auth_token: 'user_secret_auth_token',
-                foo: 'bar'
-            },
-            headers: {'X-Foo': 'bar'},
-            desiredAccuracy: 10,
-            stationaryRadius: 20,
-            distanceFilter: 10,
-            notificationTitle: 'Background tracking',   // <-- android only, customize the title of the notification
-            notificationText: 'ENABLED',                // <-- android only, customize the text of the notification
-            activityType: "OtherNavigation",            // <-- iOS-only
-            debug: true                                 // <-- enable this hear sounds for background-geolocation life-cycle.
-        });
-		app.log('Background tracking configured');
-
-        // Turn ON the background-geolocation system.  The user will be tracked whenever they suspend the app.
-        //bgGeo.start();
-
-        // If you wish to turn OFF background-tracking, call the #stop method.
-        // bgGeo.stop()
     },
-	StartGeolocation: function () {
-	    try {
-	        // Turn ON the background-geolocation system.  
-	        // The user will be tracked whenever they suspend the app.
-	        bgGeo.start();
-	        app.log('Background tracking started');
-	    }
-	    catch (ex) {
-	        app.log("Error starting background geolocation: " + ex);
-	    }
-	},
-	// If you wish to turn OFF background-tracking, call the #stop method.
-	StopGeolocation: function ()
-	{
+    StartGeolocation: function () {
         try {
-		    bgGeo.stop()
-		    app.log('Background tracking stopped');
+            // Turn ON the background-geolocation system.  
+            var options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0, desiredAccuracy: 0, frequency: 1 };
+            watchID = TrackLocation(
+                function (position) { DisplayCoords(position); },
+                function (error) { app.log(error.message) },
+                options);
+
+            app.log('Background tracking started');
         }
-	    catch (ex) {
-	        app.log("Error stopping background geolocation: " + ex);
-	    }
-	}
+        catch (ex) {
+            app.log("Error starting background geolocation: " + ex);
+        }
+    },
+    // If you wish to turn OFF background-tracking, call the #stop method.
+    StopGeolocation: function () {
+        try {
+            if (watchID != null) {
+                navigator.geolocation.clearWatch(watchID);
+                watchID = null;
+            }
+            app.log('Background tracking stopped');
+        }
+        catch (ex) {
+            app.log("Error stopping background geolocation: " + ex);
+        }
+    }
 };
