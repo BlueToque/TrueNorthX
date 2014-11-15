@@ -8,7 +8,7 @@ function GeoLocate(onSuccess, onError, options) {
     }
 
     try {
-        if (options = null)
+        if (options == null)
             options = { timeout: 10000, enableHighAccuracy: true };
 
         navigator.geolocation.getCurrentPosition(
@@ -58,7 +58,7 @@ function TrackLocation(onSuccess, onError, options) {
     }
 
     try {
-        if (options = null)
+        if (options == null)
             options = { timeout: 10000, enableHighAccuracy: true };
 
         var watchID =
@@ -84,19 +84,29 @@ function DisplayCoords(coords) {
 	$('#error').html(coords.accuracy);
 }
 
+function refreshAuthDisplay() {
+    var isLoggedIn = client.currentUser !== null;
+    $("#logged-in").toggle(isLoggedIn);
+    $("#logged-out").toggle(!isLoggedIn);
+
+    if (isLoggedIn) {
+        $("#login-name").text(client.currentUser.userId);
+        refreshTodoItems();
+    }
+}
+
 var app = {
-    watchID: undefined,
+    watchID: null,
     client: undefined,
 
     // Application Constructor
     initialize: function () {
         this.bindEvents();
-        app.log('Initialize');
-
         client = new WindowsAzure.MobileServiceClient(
             "https://truenorthtracker.azure-mobile.net/",
             "ngCCuUVAhXipnmqGCUeqJWdJciiKck31"
             );
+        app.log('Initialized');
     },
 
     // Bind Event Listeners
@@ -109,6 +119,7 @@ var app = {
         document.addEventListener('resume', this.onResume, false);
         app.log("Events bound");
     },
+
     onResume: function () {
         app.log("Event:resume");
         window.plugin.backgroundMode.disable();
@@ -125,6 +136,8 @@ var app = {
         try {
             app.log("Initialized");
             app.receivedEvent('deviceready');
+            refreshAuthDisplay();
+
         }
         catch (ex) {
             app.log(ex);
@@ -133,7 +146,7 @@ var app = {
     log: function (message) {
         try {
             console.log(message);
-            $('#update').prepend('<tr><td>' + new Date().toString() + '</td><td>' + message + '</td></tr>');
+            $('#update').prepend('<tr><td width="300px">' + new Date().toISOString() + '</td><td>' + message + '</td></tr>');
         }
         catch (ex) {
             console.log("Error logging error: " + ex);
@@ -154,53 +167,74 @@ var app = {
     },
     StartGeolocation: function () {
         try {
-            // Turn ON the background-geolocation system.  
+
+            if (this.watchID != null) {
+                this.log("Background tracking already active");
+                return;
+            }
+
+            this.log("Starting Background tracking");
+
             var options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0, desiredAccuracy: 0, frequency: 1 };
-            watchID = TrackLocation(
+
+            this.watchID = TrackLocation(
                 function (position) { DisplayCoords(position); },
                 function (error) { app.log(error.message) },
                 options);
 
-            app.log('Background tracking started');
+            this.log('Background tracking started');
         }
         catch (ex) {
-            app.log("Error starting background geolocation: " + ex);
+            this.log("Error starting background geolocation: " + ex);
         }
-    },
-    // If you wish to turn OFF background-tracking, call the #stop method.
-    StopGeolocation: function () {
-        try {
-            if (watchID != null) {
-                navigator.geolocation.clearWatch(watchID);
-                watchID = null;
-            }
-            app.log('Background tracking stopped');
-        }
-        catch (ex) {
-            app.log("Error stopping background geolocation: " + ex);
-        }
-    },
-    AddItem:function(coords)
-    {
-        trackingTable = client.getTable('Tracking');
-        todoItemTable.insert({
-            lat: coords.latitude,
-            lon: coords.longitude,
-            alt: coords.altitude,
-            heading: coords.heading,
-            speed: coords.speed,
-            error: coords.accuracy
-        });
     },
 
-    Login:function()
-    {
-        client.login("google").then(refreshAuthDisplay, function (error) {
-            alert(error);
-        });
+    StopGeolocation: function () {
+        try {
+            if (this.watchID != null) {
+                this.log("Stopping Background tracking");
+                navigator.geolocation.clearWatch(app.watchID);
+                this.watchID = null;
+                this.log('Background tracking stopped');
+            }
+            else { this.log('Background tracking not active'); }
+        }
+        catch (ex) {
+            this.log("Error stopping background geolocation: " + ex);
+        }
     },
-    Logout:function()
-    {
+
+    AddItem: function (coords) {
+        app.log("adding item to table");
+        try {
+            trackingTable = client.getTable('Tracking');
+            todoItemTable.insert({
+                lat: coords.latitude,
+                lon: coords.longitude,
+                alt: coords.altitude,
+                heading: coords.heading,
+                speed: coords.speed,
+                error: coords.accuracy
+            });
+            app.log("added item to table");
+        }
+        catch (ex) {
+            app.log("Error adding item to table: " + ex);
+        }
+    },
+
+    Login: function () {
+        app.log("Logging in");
+        client.login("google")
+            .then(
+                refreshAuthDisplay,
+                function (error) {
+                    app.log("Error logging in: " + error);
+                    //alert(error);
+                });
+    },
+    Logout: function () {
+        app.log("Logging out");
         client.logout();
     }
 };

@@ -67,9 +67,9 @@
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
     <script src='http://ajax.aspnetcdn.com/ajax/mobileservices/MobileServices.Web-1.1.2.min.js'></script>
+    <script type="text/javascript" src="js/index.js"></script>
     <script>
         app.initialize();
 
@@ -84,7 +84,6 @@
                     function (error) {
                         app.log('Error getting location: ' + error);
                     });
-                app.log('Clicked');
             });
 
             $('#start').click(function () {
@@ -95,8 +94,6 @@
                 app.StopGeolocation();
             });
 
-            refreshAuthDisplay();
-
             $('#summary').html('<strong>You must login to access data.</strong>');
             $("#logged-out button").click(function () { app.Login(); });
             $("#logged-in button").click(function () {
@@ -106,16 +103,7 @@
             });
         });
 
-        function refreshAuthDisplay() {
-            var isLoggedIn = client.currentUser !== null;
-            $("#logged-in").toggle(isLoggedIn);
-            $("#logged-out").toggle(!isLoggedIn);
-
-            if (isLoggedIn) {
-                $("#login-name").text(client.currentUser.userId);
-                refreshTodoItems();
-            }
-        }
+ 
     </script>
 </body>
 </html>
