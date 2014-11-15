@@ -77,13 +77,12 @@ function TrackLocation(onSuccess, onError, options) {
     }
 }
 
-function DisplayCoords(coords){
+function DisplayCoords(coords) {
+    app.log("Coordinates " + coords);
 	$('#lat').html(coords.latitude);
 	$('#long').html(coords.longitude);
 	$('#error').html(coords.accuracy);
 }
-
-
 
 var app = {
     watchID: undefined,
@@ -181,6 +180,19 @@ var app = {
             app.log("Error stopping background geolocation: " + ex);
         }
     },
+    AddItem:function(coords)
+    {
+        trackingTable = client.getTable('Tracking');
+        todoItemTable.insert({
+            lat: coords.latitude,
+            lon: coords.longitude,
+            alt: coords.altitude,
+            heading: coords.heading,
+            speed: coords.speed,
+            error: coords.accuracy
+        });
+    },
+
     Login:function()
     {
         client.login("google").then(refreshAuthDisplay, function (error) {
