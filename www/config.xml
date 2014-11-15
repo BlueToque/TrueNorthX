@@ -77,6 +77,8 @@
     -->
   <gap:plugin name="wellbload.cordova.background-geolocation" />
   <gap:plugin name="de.appplant.cordova.plugin.background-mode" />
+  <gap:plugin name="com.msopentech.azure-mobile-services" version="0.1.2" />
+  <gap:plugin name="msopentech.azure.notificationhub" version="0.0.6" />
   <!--
     <gap:plugin name="org.apache.cordova.geolocation" /> 
     -->

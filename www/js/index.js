@@ -87,11 +87,17 @@ function DisplayCoords(coords){
 
 var app = {
     watchID: undefined,
+    client: undefined,
 
     // Application Constructor
     initialize: function () {
         this.bindEvents();
         app.log('Initialize');
+
+        client = new WindowsAzure.MobileServiceClient(
+            "https://truenorthtracker.azure-mobile.net/",
+            "ngCCuUVAhXipnmqGCUeqJWdJciiKck31"
+            );
     },
 
     // Bind Event Listeners
@@ -174,5 +180,15 @@ var app = {
         catch (ex) {
             app.log("Error stopping background geolocation: " + ex);
         }
+    },
+    Login:function()
+    {
+        client.login("google").then(refreshAuthDisplay, function (error) {
+            alert(error);
+        });
+    },
+    Logout:function()
+    {
+        client.logout();
     }
 };
