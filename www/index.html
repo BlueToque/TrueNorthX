@@ -64,68 +64,57 @@
             </div>
         </div>
 
-                <script type="text/javascript" src="cordova.js"></script>
-                <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
-                <script type="text/javascript" src="js/bootstrap.min.js"></script>
-                <script type="text/javascript" src="js/index.js"></script>
-                <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
-                <script>
-                    app.initialize();
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+    <script>
+        app.initialize();
 
-                    var mobileService = new WindowsAzure.MobileServiceClient(
-                            "https://todolist.azure-mobile.net",
-                            "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                        );
+        $(document).ready(function () {
 
-                    $(document).ready(function () {
-
-                        $('#locate').click(function () {
-                            GeoLocate(
-                                function (coords) {
-                                    app.log('Got coordinates ' + coords.latitude + ', ' + coords.longitude);
-                                    DisplayCoords(coords);
-                                },
-                                function (error) {
-                                    app.log('Error getting location: ' + error);
-                                });
-                            app.log('Clicked');
-                        });
-
-                        $('#start').click(function () {
-                            app.StartGeolocation();
-                        });
-
-                        $('#start').click(function () {
-                            app.StopGeolocation();
-                        });
-
-                        refreshAuthDisplay();
-
-                        $('#summary').html('<strong>You must login to access data.</strong>');
-                        $("#logged-out button").click(logIn);
-                        $("#logged-in button").click(logOut);
+            $('#locate').click(function () {
+                GeoLocate(
+                    function (coords) {
+                        app.log('Got coordinates ' + coords.latitude + ', ' + coords.longitude);
+                        DisplayCoords(coords);
+                    },
+                    function (error) {
+                        app.log('Error getting location: ' + error);
                     });
+                app.log('Clicked');
+            });
 
-                    function refreshAuthDisplay() {
-                        var isLoggedIn = client.currentUser !== null;
-                        $("#logged-in").toggle(isLoggedIn);
-                        $("#logged-out").toggle(!isLoggedIn);
+            $('#start').click(function () {
+                app.StartGeolocation();
+            });
 
-                        if (isLoggedIn) {
-                            $("#login-name").text(client.currentUser.userId);
-                            refreshTodoItems();
-                        }
-                    }
+            $('#start').click(function () {
+                app.StopGeolocation();
+            });
 
-                    function logIn() {
-                        app.Login();
-                    }
+            refreshAuthDisplay();
 
-                    function logOut() {
-                        app.Logout();
-                        refreshAuthDisplay();
-                        $('#summary').html('<strong>You must login to access data.</strong>');
-                    }
-                </script>
+            $('#summary').html('<strong>You must login to access data.</strong>');
+            $("#logged-out button").click(function () { app.Login(); });
+            $("#logged-in button").click(function () {
+                app.Logout();
+                refreshAuthDisplay();
+                $('#summary').html('<strong>You must login to access data.</strong>');
+            });
+        });
+
+        function refreshAuthDisplay() {
+            var isLoggedIn = client.currentUser !== null;
+            $("#logged-in").toggle(isLoggedIn);
+            $("#logged-out").toggle(!isLoggedIn);
+
+            if (isLoggedIn) {
+                $("#login-name").text(client.currentUser.userId);
+                refreshTodoItems();
+            }
+        }
+    </script>
 </body>
 </html>
